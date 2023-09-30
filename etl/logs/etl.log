@@ -1,0 +1,11 @@
+ERROR:root:Error connecting to PostgreSQL: could not translate host name "my_postgres" to address: Unknown host
+
+ERROR:root:Error connecting to PostgreSQL: connection to server at "172.26.0.2", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+ERROR:root:Error connecting to PostgreSQL: connection to server at "localhost" (::1), port 5432 failed: FATAL:  password authentication failed for user "myuser"
+
+ERROR:root:Error connecting to PostgreSQL: could not translate host name "postgres" to address: Unknown host
+
+ERROR:root:Error connecting to PostgreSQL: could not translate host name "database" to address: Unknown host
+

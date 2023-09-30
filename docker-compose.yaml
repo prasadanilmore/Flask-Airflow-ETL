@@ -1,0 +1,35 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    networks:
+      - mynetwork
+    ports:
+      - "5432:5432"
+
+  etl:
+    build:
+      context: ./etl
+    volumes:
+      - ./etl:/etl
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
+
+  # api:
+  #   build:
+  #     context: ./api
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - mynetwork
+  #   depends_on:
+  #     - postgres
+
+networks:
+  mynetwork:
