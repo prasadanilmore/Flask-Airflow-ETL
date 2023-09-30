@@ -12,8 +12,7 @@ services:
       - "5432:5432"
 
   etl:
-    build:
-      context: ./etl
+    build: ./etl
     volumes:
       - ./etl:/etl
     networks:

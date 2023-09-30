@@ -72,12 +72,14 @@ def insert_data_into_postgres(connection, data):
         cursor.close()
 
 if __name__ == "__main__":
+    print("Before loading Json")
     json_data = load_data_from_json('./resources/data.json')
+    print("Before processing Json")
     processed_data = process_data(json_data)
-    
+    print("Before database connectionnnnn")
     # Establish PostgreSQL connection
     db_connection = connect_to_postgres()
-    
+    print("Before insertinggggggg data")
     try:
         # Insert data into PostgreSQL
         insert_data_into_postgres(db_connection, processed_data)
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         logging.error(f"ETL process failed: {e}")
     finally:
         db_connection.close()
-
+    print("Operation done")
 # docker exec -it postgres bash
 # psql -h localhost -U myuser -d mydb
 # SELECT * FROM merchandise;
