@@ -1,16 +1,16 @@
 # Use the official Python image
-# FROM python:3.8
+FROM python:3.8
 
-# WORKDIR /app
+WORKDIR /app
 
-# # Copy the API code into the container
-# COPY . .
+# Copy the API code into the container
+COPY . .
 
-# # Install required dependencies
-# RUN pip install -r requirements.txt
+# Install required dependencies
+RUN pip install -r requirements.txt
 
-# # Expose the port
-# EXPOSE 8080
+# Expose the port
+EXPOSE 8080
 
-# # Define the command to run the API
-# CMD ["python", "app.py"]
+# Define the command to run the API
+CMD ["python", "app.py"]

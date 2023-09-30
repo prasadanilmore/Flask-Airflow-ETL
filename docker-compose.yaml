@@ -20,15 +20,15 @@ services:
     depends_on:
       - postgres
 
-  # api:
-  #   build:
-  #     context: ./api
-  #   ports:
-  #     - "8080:8080"
-  #   networks:
-  #     - mynetwork
-  #   depends_on:
-  #     - postgres
+  api:
+    build:
+      context: ./api
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
 
 networks:
   mynetwork:

@@ -52,3 +52,31 @@ Make sure to focus on the logic and structure of the DAG, demonstrating your und
 - We’d appreciate seeing test cases for each part of the assignment.
 
 Thanks and good luck!
+
+
+- api
+- etl
+  - resources
+    - data.json
+  - docker-compose.yaml
+  -etl.py
+  -requirements.txt
+- orchestration
+-README.md
+
+
+        customerid        |         orderid          | netmerchandisevalueeur 
+--------------------------+--------------------------+------------------------
+ 5b6950c008c899c1a4caf2a1 | 5b6950c0fda5be24b51cfe47 |                  23.51
+ 5b6950c008c899c1a4caf2a1 | 5b6950c07ceef02d2044eb8d |                  31.15
+ 5b6950c008c899c1a4caf2a1 | 5b6950c0b1589dd9d3c9758c |                   5.07
+ 5b6950c008c899c1a4caf2a1 | 5b6950c05bbe2e59661c9eae |                  14.29
+ 5b6950c008c899c1a4caf2a1 | 5b6950c0340018c025fa6acf |                  18.24
+
+
+
+{
+  "customerId": "5b6950c008c899c1a4caf2a1", 
+  "orders": 50, 
+  "totalNetMerchandiseValueEur": 922.6
+}
