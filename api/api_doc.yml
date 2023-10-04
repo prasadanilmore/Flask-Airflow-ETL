@@ -1,0 +1,39 @@
+---
+swagger: '2.0'
+info:
+  title: 'My API'
+  description: 'API documentation for My API'
+basePath: '/'
+schemes:
+  - http
+paths:
+  /spend:
+    get:
+      tags:
+        - Spend
+      parameters:
+        - name: customer_id
+          in: query
+          type: string
+          required: true
+          description: Customer ID
+      responses:
+        '200':
+          description: Customer spend data
+          schema:
+            type: object
+            properties:
+              customerId:
+                type: string
+              orders:
+                type: integer
+              totalNetMerchandiseValueEur:
+                type: number
+                format: float
+          examples:
+            application/json:
+              customerId: '5b6950c008c899c1a4caf2a1'
+              orders: 3
+              totalNetMerchandiseValueEur: 59.97
+        '404':
+          description: Customer data not found

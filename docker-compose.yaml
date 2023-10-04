@@ -1,4 +1,24 @@
 version: '3'
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.7.1
+  environment:
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://myuser:mypassword@postgres:5432/mydb
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW__CORE__LOGGING_LEVEL=INFO
+  volumes:
+    - ./orchestration/dags:/opt/airflow/dags
+    - ./orchestration/logs:/opt/airflow/logs
+    - ./etl:/opt/airflow/plugins
+    - ./orchestration/airflow.cfg:/opt/airflow/airflow.cfg
+    - ./config.ini:/opt/airflow/plugins
+  depends_on:
+    postgres:
+      condition: service_healthy  
+  networks:
+    - mynetwork
+
 services:
   postgres:
     image: postgres
@@ -10,15 +30,22 @@ services:
       - mynetwork
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "myuser", "-d", "mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   etl:
     build: ./etl
     volumes:
       - ./etl:/etl
+      - ./config.ini:/app/config.ini
     networks:
       - mynetwork
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   api:
     build:
@@ -27,8 +54,56 @@ services:
       - "8080:8080"
     networks:
       - mynetwork
+    volumes:
+      - ./api:/api
+      - ./config.ini:/app/config.ini
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
+  airflow-init:
+    << : *airflow-common
+    container_name: airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - airflow db init && (
+        airflow users create
+          --role Admin
+          --username airflow
+          --password airflow
+          --email airflow@airflow.com
+          --firstname airflow
+          --lastname airflow )
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - mynetwork
+
+  airflow-webserver:
+    << : *airflow-common
+    command: airflow webserver
+    ports:
+      - "8081:8080"
+    container_name: airflow_webserver
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - mynetwork
+
+  airflow-scheduler:
+    << : *airflow-common
+    command: airflow scheduler
+    container_name: airflow_scheduler
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy  
+    networks:
+      - mynetwork
 networks:
   mynetwork:

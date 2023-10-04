@@ -1,0 +1,41 @@
+name: ETL Workflow
+
+on:
+  push:
+    branches:
+      - main  # Modify to your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8  
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ETL unit tests
+        run: pytest tests/etl_test.py
+
+      - name: Build Docker images
+        run: docker-compose -f docker-compose.yaml build
+
+      - name: Deploy with Docker Compose
+        run: docker-compose -f docker-compose.yaml up -d
+
+      - name: Wait for containers to start
+        run: sleep 10  
+
+      - name: Check ETL output
+        run: |
+          # Check ETL output, e.g., logs or any other output
+
+      - name: Clean up
+        run: docker-compose -f docker-compose.yaml down

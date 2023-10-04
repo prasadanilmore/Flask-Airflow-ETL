@@ -1,0 +1,23 @@
+[2023-10-04T11:08:04.618+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: etl_dag.load_data manual__2023-10-04T11:07:54.292211+00:00 [queued]>
+[2023-10-04T11:08:04.647+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: etl_dag.load_data manual__2023-10-04T11:07:54.292211+00:00 [queued]>
+[2023-10-04T11:08:04.649+0000] {taskinstance.py:1359} INFO - Starting attempt 1 of 1
+[2023-10-04T11:08:04.681+0000] {taskinstance.py:1380} INFO - Executing <Task(PythonOperator): load_data> on 2023-10-04 11:07:54.292211+00:00
+[2023-10-04T11:08:04.693+0000] {standard_task_runner.py:57} INFO - Started process 406 to run task
+[2023-10-04T11:08:04.723+0000] {standard_task_runner.py:84} INFO - Running: ['airflow', 'tasks', 'run', 'etl_dag', 'load_data', 'manual__2023-10-04T11:07:54.292211+00:00', '--job-id', '4', '--raw', '--subdir', 'DAGS_FOLDER/etl_dag.py', '--cfg-path', '/tmp/tmpq3tucmo9']
+[2023-10-04T11:08:04.744+0000] {standard_task_runner.py:85} INFO - Job 4: Subtask load_data
+[2023-10-04T11:08:04.860+0000] {logging_mixin.py:151} WARNING - /home/airflow/.local/lib/python3.8/site-packages/airflow/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2023-10-04T11:08:05.069+0000] {task_command.py:415} INFO - Running <TaskInstance: etl_dag.load_data manual__2023-10-04T11:07:54.292211+00:00 [running]> on host 9a46a127aae5
+[2023-10-04T11:08:05.578+0000] {taskinstance.py:1660} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='etl_dag' AIRFLOW_CTX_TASK_ID='load_data' AIRFLOW_CTX_EXECUTION_DATE='2023-10-04T11:07:54.292211+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2023-10-04T11:07:54.292211+00:00'
+[2023-10-04T11:08:05.601+0000] {taskinstance.py:1935} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/plugins/etl.py", line 54, in load_data_from_json
+    with open(file_path, 'r') as file:
+FileNotFoundError: [Errno 2] No such file or directory: './plugins/etl/resources/data.json'
+[2023-10-04T11:08:05.770+0000] {taskinstance.py:1398} INFO - Marking task as FAILED. dag_id=etl_dag, task_id=load_data, execution_date=20231004T110754, start_date=20231004T110804, end_date=20231004T110805
+[2023-10-04T11:08:05.805+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 4 for task load_data ([Errno 2] No such file or directory: './plugins/etl/resources/data.json'; 406)
+[2023-10-04T11:08:05.857+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2023-10-04T11:08:05.915+0000] {taskinstance.py:2776} INFO - 0 downstream tasks scheduled from follow-on schedule check

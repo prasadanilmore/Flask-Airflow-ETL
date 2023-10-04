@@ -1,0 +1,14 @@
+[2023-10-04T11:30:12.104+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: etl_dag.process_data manual__2023-10-04T11:30:03.244115+00:00 [queued]>
+[2023-10-04T11:30:12.113+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: etl_dag.process_data manual__2023-10-04T11:30:03.244115+00:00 [queued]>
+[2023-10-04T11:30:12.114+0000] {taskinstance.py:1359} INFO - Starting attempt 1 of 1
+[2023-10-04T11:30:12.134+0000] {taskinstance.py:1380} INFO - Executing <Task(PythonOperator): process_data> on 2023-10-04 11:30:03.244115+00:00
+[2023-10-04T11:30:12.141+0000] {standard_task_runner.py:57} INFO - Started process 199 to run task
+[2023-10-04T11:30:12.144+0000] {standard_task_runner.py:84} INFO - Running: ['airflow', 'tasks', 'run', 'etl_dag', 'process_data', 'manual__2023-10-04T11:30:03.244115+00:00', '--job-id', '10', '--raw', '--subdir', 'DAGS_FOLDER/etl_dag.py', '--cfg-path', '/tmp/tmplcn69h6o']
+[2023-10-04T11:30:12.148+0000] {standard_task_runner.py:85} INFO - Job 10: Subtask process_data
+[2023-10-04T11:30:12.173+0000] {logging_mixin.py:151} WARNING - /home/airflow/.local/lib/python3.8/site-packages/airflow/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2023-10-04T11:30:12.247+0000] {task_command.py:415} INFO - Running <TaskInstance: etl_dag.process_data manual__2023-10-04T11:30:03.244115+00:00 [running]> on host 9a46a127aae5
+[2023-10-04T11:30:12.419+0000] {taskinstance.py:1660} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='etl_dag' AIRFLOW_CTX_TASK_ID='process_data' AIRFLOW_CTX_EXECUTION_DATE='2023-10-04T11:30:03.244115+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2023-10-04T11:30:03.244115+00:00'
+[2023-10-04T11:30:12.488+0000] {python.py:194} INFO - Done. Returned value was: None
+[2023-10-04T11:30:12.501+0000] {taskinstance.py:1398} INFO - Marking task as SUCCESS. dag_id=etl_dag, task_id=process_data, execution_date=20231004T113003, start_date=20231004T113012, end_date=20231004T113012
+[2023-10-04T11:30:12.558+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2023-10-04T11:30:12.586+0000] {taskinstance.py:2776} INFO - 1 downstream tasks scheduled from follow-on schedule check

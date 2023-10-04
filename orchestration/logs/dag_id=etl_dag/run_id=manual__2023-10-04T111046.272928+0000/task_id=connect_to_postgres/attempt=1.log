@@ -1,0 +1,26 @@
+[2023-10-04T11:11:15.280+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: etl_dag.connect_to_postgres manual__2023-10-04T11:10:46.272928+00:00 [queued]>
+[2023-10-04T11:11:15.297+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: etl_dag.connect_to_postgres manual__2023-10-04T11:10:46.272928+00:00 [queued]>
+[2023-10-04T11:11:15.299+0000] {taskinstance.py:1359} INFO - Starting attempt 1 of 1
+[2023-10-04T11:11:15.320+0000] {taskinstance.py:1380} INFO - Executing <Task(PythonOperator): connect_to_postgres> on 2023-10-04 11:10:46.272928+00:00
+[2023-10-04T11:11:15.332+0000] {standard_task_runner.py:57} INFO - Started process 452 to run task
+[2023-10-04T11:11:15.337+0000] {standard_task_runner.py:84} INFO - Running: ['airflow', 'tasks', 'run', 'etl_dag', 'connect_to_postgres', 'manual__2023-10-04T11:10:46.272928+00:00', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/etl_dag.py', '--cfg-path', '/tmp/tmpfrelo3bf']
+[2023-10-04T11:11:15.341+0000] {standard_task_runner.py:85} INFO - Job 7: Subtask connect_to_postgres
+[2023-10-04T11:11:15.393+0000] {logging_mixin.py:151} WARNING - /home/airflow/.local/lib/python3.8/site-packages/airflow/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2023-10-04T11:11:15.473+0000] {task_command.py:415} INFO - Running <TaskInstance: etl_dag.connect_to_postgres manual__2023-10-04T11:10:46.272928+00:00 [running]> on host 9a46a127aae5
+[2023-10-04T11:11:15.661+0000] {taskinstance.py:1660} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='etl_dag' AIRFLOW_CTX_TASK_ID='connect_to_postgres' AIRFLOW_CTX_EXECUTION_DATE='2023-10-04T11:10:46.272928+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2023-10-04T11:10:46.272928+00:00'
+[2023-10-04T11:11:15.714+0000] {etl.py:101} ERROR - Error connecting to PostgreSQL: name 'HOST' is not defined
+[2023-10-04T11:11:15.716+0000] {taskinstance.py:1935} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/etl_dag.py", line 47, in _connect_to_postgres
+    connection = connect_to_postgres()
+  File "/opt/airflow/plugins/etl.py", line 93, in connect_to_postgres
+    host=HOST,
+NameError: name 'HOST' is not defined
+[2023-10-04T11:11:15.784+0000] {taskinstance.py:1398} INFO - Marking task as FAILED. dag_id=etl_dag, task_id=connect_to_postgres, execution_date=20231004T111046, start_date=20231004T111115, end_date=20231004T111115
+[2023-10-04T11:11:15.821+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 7 for task connect_to_postgres (name 'HOST' is not defined; 452)
+[2023-10-04T11:11:15.874+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2023-10-04T11:11:15.953+0000] {taskinstance.py:2776} INFO - 0 downstream tasks scheduled from follow-on schedule check

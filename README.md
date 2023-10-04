@@ -1,82 +1,78 @@
-# Intro
-Dear Applicant,
-Thank you for your interest in the Data Engineer position on JustEatTakeaway.com’s Food Catalogue Team.
-The task in front of you is designed to assess the technical skills that you’ll need on the job. We hope you’ll enjoy it!
-
-# Assignment
-The challenge consists of three parts, each designed to assess a set of core competencies needed for the position. The tasks involve implementing an ETL job, developing a REST API interface, and designing a data orchestration process.
-
-Please add your solutions to the respective sub-modules (`etl`, `api`, `orchestration`) which are already present.
-**!! Please read the details of all assignments before starting the first one !!**
+## Introduction
+This documentation provides an overview of the tasks completed in this project. The project comprises three key tasks: ETL (Extract, Transform, Load), API development, and Data Orchestration using Airflow. Each task is detailed below along with explanations of design choices and considerations.
 
 ## ETL Task
-You will find a json file under `/etl/resources`. Your first task is to read this data, validate its correctness, and calculate the _net_ merchandise value of the ordered products.
+### Implementation
+The ETL (Extract, Transform, Load) task involves processing JSON data, calculating the net merchandise value for ordered products based on VAT rates, and persisting the results in a data storage system. The Python ETL script follows these steps:
 
-The calculation should consider the following VAT rates: 7% for cold foods, 15% for hot foods, and 9% for beverages. After processing the data, you should persist the results in a data storage system of your choice.
+Data Loading: The script reads JSON data from the provided file path.
+VAT Rate Calculation: For each product in the data, it calculates the net merchandise value based on predefined VAT rates.
+Data Transformation: The processed data is transformed into a structured format.
+Data Loading: The transformed data is inserted into a PostgreSQL database.
 
-Your ETL job should include robust error handling and logging mechanisms.
+### Choice of Data Storage System
+For this project, we chose PostgreSQL as the data storage system due to its robustness, performance, and support for structured data. However, for real-time scenarios, we recommend using Apache Cassandra, a distributed NoSQL database known for its fault tolerance, scalability, and efficient handling of real-time data updates.
 
-Also, please describe how your ETL job could be adapted to handle a real-time data processing scenario, like a continuous stream of data coming from a Kafka topic.
+### Handling Real-Time Data
+To adapt the ETL job for real-time data processing from a Kafka topic, the following steps can be taken:
+
+Kafka Producer: Introduce a Kafka producer container that sends real-time data to specific Kafka topics based on data types (e.g., hot foods, cold foods, beverages).
+Kafka Consumer: Implement a Kafka consumer using technologies like Apache Spark with Kafka Streams. The consumer subscribes to Kafka topics and performs real-time calculations.
+Data Storage: Store the real-time results in a distributed database like Cassandra, which is well-suited for handling real-time updates.
+
+### Error Handling and Logging
+Robust error handling and logging mechanisms are implemented in the ETL script to ensure data integrity and fault tolerance. Error handling includes catching exceptions and logging detailed error messages, allowing for easy debugging and troubleshooting.
 
 ## API Task
-The second task is to develop a REST API that exposes the data generated in the ETL task. The API should implement a single endpoint: `GET /spend/${customerId}`, which should return the following response for a given `customerId`:
+### Implementation
+The API task involves developing a REST API to expose the data generated in the ETL task. The API is implemented using the Python Flask framework and follows these key points:
 
-```json
-{
-  “customerId”: “123",
-  “orders”: 3,
-  “totalNetMerchandiseValueEur”: 52.13
-}
-```
+Endpoint: The API provides a single endpoint, GET /spend/${customerId}, where ${customerId} is a placeholder for the customer ID.
+Response: The API responds with customer spend information in JSON format, including customer ID, the number of orders, and the total net merchandise value in EUR.
+Scalability: The API is designed to handle high loads and concurrent requests, ensuring its ability to perform efficiently under increased traffic.
 
-Your API should be designed to handle high load and concurrent requests. Please also document your API using standards like Swagger.
+### Scalability and Concurrency
+The API is designed to handle high loads and concurrent requests. It's containerized and can be deployed in different environments to ensure compliance with DevOps practices. To handle increased traffic, scaling can be achieved by deploying multiple instances of the API behind a load balancer.
+
+### API Documentation
+The API is documented using Swagger, ensuring clear and comprehensive documentation for consumers of the API. The Swagger UI provides an interactive interface to explore and test the API.
 
 
 ## Data Orchestration Task
-For the data orchestration task, you are required to design a data orchestration process using a tool like Airflow or Dagster.
-However, please note that you do not need to set up and run an actual Airflow instance as part of the challenge.
-Your task is to create the Airflow DAG (Directed Acyclic Graph) itself, which outlines the steps and dependencies of the ETL (Extract, Transform, Load) job.
-Make sure to focus on the logic and structure of the DAG, demonstrating your understanding of data orchestration concepts and your ability to design an effective ETL workflow.
+### Airflow DAG Design
+For the data orchestration task, an Airflow DAG is designed to outline the steps and dependencies of the ETL job. The DAG orchestrates the ETL workflow, ensuring data extraction, transformation, and loading are performed efficiently.
 
+The provided etl_dag.py script serves as a solution to this task, and this documentation provides a detailed explanation of the DAG's logic and structure.
 
-## Requirements
-- The application should be written in Python
-- Your applications should be modularized and reusable.
-- Your applications need to be containerized and runnable in different environments, demonstrating compliance with devops practices.
-- Both your ETL job and API should include a test suite and clear documentation.
-- You should discuss your choice of data storage system, considering factors like performance, scalability, and the ability to handle real-time updates.
+### DAG Description
+The Airflow DAG is named 'etl_dag' and is designed to perform the following ETL operations:
 
-## Notes
-- If either your API, ETL job, or data orchestration process require additional arguments, please specify these in your submission.
-- Please explain how you would set up a CI/CD pipeline for your applications, and how this pipeline would manage deployments and handle failures.
-- We’d appreciate seeing test cases for each part of the assignment.
+load_data: This task uses the load_data_from_json function to load data from a JSON file located at /opt/airflow/plugins/resources/data.json. The data is then stored as an XCom variable to be used in subsequent tasks.
 
-Thanks and good luck!
+process_data: The process_data task processes the data fetched from the previous task. It calls the _process_data function, which calculates the net merchandise value for the orders. The processed data is stored as an XCom variable to be used in the next task.
 
+connect_to_postgres: This task establishes a connection to a PostgreSQL database using the connection parameters (HOST, DATABASE, USER, PASSWORD, PORT) obtained from the configuration file. The connection is stored as an XCom variable, and the processed data is also stored in XCom.
 
-- api
-- etl
-  - resources
-    - data.json
-  - docker-compose.yaml
-  -etl.py
-  -requirements.txt
-- orchestration
--README.md
+insert_data: The insert_data_into_postgres function is called to insert the processed data into the PostgreSQL database. It uses the database connection and processed data obtained from the previous tasks.
 
+### Task Dependencies
+The task dependencies ensure that each step is executed in the correct order, following the ETL process:
 
-        customerid        |         orderid          | netmerchandisevalueeur 
---------------------------+--------------------------+------------------------
- 5b6950c008c899c1a4caf2a1 | 5b6950c0fda5be24b51cfe47 |                  23.51
- 5b6950c008c899c1a4caf2a1 | 5b6950c07ceef02d2044eb8d |                  31.15
- 5b6950c008c899c1a4caf2a1 | 5b6950c0b1589dd9d3c9758c |                   5.07
- 5b6950c008c899c1a4caf2a1 | 5b6950c05bbe2e59661c9eae |                  14.29
- 5b6950c008c899c1a4caf2a1 | 5b6950c0340018c025fa6acf |                  18.24
+load_data_task depends on the DAG's start date.
+process_data_task depends on load_data_task, as it requires the loaded data.
+connect_to_postgres_task depends on process_data_task, as it needs the processed data to store in the database.
+insert_data_task depends on connect_to_postgres_task to ensure that the database connection and processed data are available before insertion.
 
+## Additional Questions
 
+### CI/CD Pipeline Setup
 
-{
-  "customerId": "5b6950c008c899c1a4caf2a1", 
-  "orders": 50, 
-  "totalNetMerchandiseValueEur": 922.6
-}
+A concept for a CI/CD pipeline is provided in the ci-cd directory. To set up a full CI/CD pipeline, the following steps would be taken:
+
+Code is pushed to a version control system (e.g., Git).
+A CI tool (e.g., GitHub Actions, Jenkins) detects changes and triggers a build.
+The CI server runs tests and creates a Docker image for the application.
+The image is pushed to a container registry (e.g., Docker Hub).
+A CD tool (e.g., Kubernetes, AWS Elastic Beanstalk) deploys the new image to the production environment.
+Deployment includes rolling updates to ensure minimal downtime.
+Monitoring and alerting are set up to handle failures and performance issues.

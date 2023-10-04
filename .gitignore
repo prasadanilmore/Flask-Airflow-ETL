@@ -1,0 +1,9 @@
+# Ignore line ending-related files
+*.bak
+*.swp
+*.swo
+*.tmp
+*.DS_Store
+
+# Ignore 'latest' file
+orchestration/logs/scheduler/latest

@@ -81,7 +81,7 @@ def process_data(data):
     return processed_data
 
 # Establish PostgreSQL connection
-def connect_to_postgres(host, database, user, password, port):
+def connect_to_postgres():
     """
     Establish a connection to PostgreSQL.
 
@@ -90,11 +90,11 @@ def connect_to_postgres(host, database, user, password, port):
     """
     try:
         connection = psycopg2.connect(
-            host=host, 
-            database=database,
-            user=user,
-            password=password,
-            port=port,
+            host=HOST, 
+            database=DATABASE,
+            user=USER,
+            password=PASSWORD,
+            port=PORT,
         )
         return connection
     except Exception as e:
@@ -169,21 +169,17 @@ if __name__ == "__main__":
         processed_data = process_data(json_data)
 
         # Establish PostgreSQL connection
-        db_connection = connect_to_postgres(HOST, DATABASE, USER, PASSWORD, PORT)
+        db_connection = connect_to_postgres()
 
         # Insert data into PostgreSQL
         insert_data_into_postgres(db_connection, processed_data)
-
         logging.info("Data Entered in Database Successfully!")
-
     except Exception as e:
         logging.error(f"ETL process failed: {e}")
-
     finally:
         if db_connection:
             db_connection.close()
-
-# To view data in Postgres database    
+        
 # docker exec -it postgres bash
 # psql -h localhost -U myuser -d mydb
 # SELECT * FROM merchandise;
