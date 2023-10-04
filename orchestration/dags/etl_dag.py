@@ -1,6 +1,6 @@
 import configparser
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator, DummyOperator
 from datetime import datetime
 from etl import (
     load_data_from_json,
@@ -8,7 +8,6 @@ from etl import (
     connect_to_postgres,
     insert_data_into_postgres,
 )
-
 
 # Create a configuration object
 config = configparser.ConfigParser()
@@ -37,8 +36,19 @@ dag = DAG(
     'etl_dag',
     default_args=default_args,
     description='ETL DAG for your project',
-    schedule_interval=None,  # Set your desired schedule interval
-    catchup=False,  # Set to False to prevent backfilling
+    schedule_interval=None,  
+    catchup=False,  
+)
+
+# Define start and end dummy operators
+start_task = DummyOperator(
+    task_id='start',
+    dag=dag,
+)
+
+end_task = DummyOperator(
+    task_id='end',
+    dag=dag,
 )
 
 # Define individual tasks as PythonOperators
@@ -61,23 +71,18 @@ process_data_task = PythonOperator(
     dag=dag,
 )
 
-def _connect_to_postgres(ti):
-    processed_data = ti.xcom_pull(task_ids='process_data', key='processed_data')
-    connection = connect_to_postgres(HOST, DATABASE, USER, PASSWORD, PORT)
-    ti.xcom_push(key='db_connection', value=connection)
-    ti.xcom_push(key='processed_data', value=processed_data)
-
-connect_to_postgres_task = PythonOperator(
-    task_id='connect_to_postgres',
-    python_callable=_connect_to_postgres,
-    provide_context=True,  
-    dag=dag,
-)
-
 def _insert_data_into_postgres(ti):
-    connection = ti.xcom_pull(task_ids='connect_to_postgres', key='db_connection')
-    processed_data = ti.xcom_pull(task_ids='connect_to_postgres', key='processed_data')
+    # Establish a new database connection within the task
+    connection = connect_to_postgres(HOST, DATABASE, USER, PASSWORD, PORT)
+    
+    # Retrieve processed data from XCom
+    processed_data = ti.xcom_pull(task_ids='process_data', key='processed_data')
+
+    # Insert data into PostgreSQL
     insert_data_into_postgres(connection, processed_data)
+    
+    # Close the database connection
+    connection.close()
 
 insert_data_task = PythonOperator(
     task_id='insert_data',
@@ -87,4 +92,4 @@ insert_data_task = PythonOperator(
 )
 
 # Set task dependencies
-load_data_task >> process_data_task >> connect_to_postgres_task >> insert_data_task
+start_task >> load_data_task >> process_data_task >> insert_data_task >> end_task

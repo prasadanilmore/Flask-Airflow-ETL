@@ -5,8 +5,8 @@ This documentation provides an overview of the tasks completed in this project. 
 ### Implementation
 The ETL (Extract, Transform, Load) task involves processing JSON data, calculating the net merchandise value for ordered products based on VAT rates, and persisting the results in a data storage system. The Python ETL script follows these steps:
 
-- Data Loading: The script reads JSON data from the provided file path.
-- VAT Rate Calculation: For each product in the data, it calculates the net merchandise value based on predefined VAT rates.
+- Data Loading: The ETL job reads JSON data from the /etl/resources directory.
+- VAT Rate Calculation: Calculates the net merchandise value by applying VAT rates (7% for cold foods, 15% for hot foods, and 9% for beverages).
 - Data Transformation: The processed data is transformed into a structured format.
 - Data Loading: The transformed data is inserted into a PostgreSQL database.
 
@@ -30,7 +30,7 @@ Robust error handling and logging mechanisms are implemented in the ETL script t
 The API task involves developing a REST API to expose the data generated in the ETL task. The API is implemented using the Python Flask framework and follows these key points:
 
 - Endpoint: The API provides a single endpoint, `GET /spend/${customerId}`, where `${customerId}` is a placeholder for the customer ID.
-- Response: The API responds with customer spend information in JSON format, including customer ID, the number of orders, and the total net merchandise value in EUR.
+- Response: The API responds with customer spend information in JSON format, including `customerId`, the number of `orders`, and the `totalNetMerchandiseValueEur` value in EUR.
 - Scalability: The API is designed to handle high loads and concurrent requests, ensuring its ability to perform efficiently under increased traffic.
 
 ### Scalability and Concurrency
@@ -67,6 +67,10 @@ The task dependencies ensure that each step is executed in the correct order, fo
 
 ## Additional Questions
 
+### Test Suites
+
+A testing framework is provided for both the ETL job and the API. While the testing is limited due to computational limitations, it demonstrates the structure and concept of testing. I have added separate test directories for API and ETL. Due to resource limitations, the testing functions are kept limited, but in an ideal scenario, I would set up a test database and include assertions to verify data storage and connections.
+
 ### CI/CD Pipeline Setup
 
 A concept for a CI/CD pipeline is provided in the ci-cd directory. To set up a full CI/CD pipeline, the following steps would be taken:
@@ -78,3 +82,48 @@ A concept for a CI/CD pipeline is provided in the ci-cd directory. To set up a f
 - A CD tool (e.g., Kubernetes, AWS Elastic Beanstalk) deploys the new image to the production environment.
 - Deployment includes rolling updates to ensure minimal downtime.
 - Monitoring and alerting are set up to handle failures and performance issues.
+
+## Docker Compose Configuration
+
+The project includes a docker-compose.yaml file, which defines the services and configurations required to run the project. 
+
+### Services
+
+The `services` section defines multiple services that make up the project:
+
+- **postgres:** This service uses the PostgreSQL Docker image and configures the database name, user, and password.
+
+- **etl:** This service is built from the `./etl` directory and mounts the `config.ini` file for ETL configuration. It depends on the `postgres` service.
+
+- **api:** This service is built from the `./api` directory and exposes port 8080 for the REST API. It also mounts the `config.ini` file and depends on the `postgres` service.
+
+- **airflow-init:** This service initializes the Airflow database and creates an admin user. It depends on the `postgres` service.
+
+- **airflow-webserver:** This service runs the Airflow webserver and exposes port 8081. It depends on the `postgres` service.
+
+- **airflow-scheduler:** This service runs the Airflow scheduler. It depends on the `postgres` service.
+
+
+## Running the Project
+To run the project, follow these steps:
+
+1. Ensure Docker and Docker Compose are installed.
+
+2. Place project files, excluding `docker-compose.yaml`, in a directory.
+
+3. Open a terminal and navigate to the project directory.
+
+4. Run the following command to start the services:
+   ```bash
+   docker-compose up
+
+This command will build the required Docker containers, start the services, and display logs in the terminal.
+
+5. Once the services are up and running, you can access the API at http://localhost:8080 and the Airflow web UI at http://localhost:8081.
+
+6. To stop the services, press Ctrl + C in the terminal where Docker Compose is running, and then run:
+
+  ```bash
+  docker-compose down
+
+This setup allows you to run the ETL job, REST API, and data orchestration process using Docker containers. Please note that this is a basic setup, and for production use, you may need to configure additional settings such as security, scaling, and monitoring.
